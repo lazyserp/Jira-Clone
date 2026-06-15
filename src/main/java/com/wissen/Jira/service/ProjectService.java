@@ -13,9 +13,9 @@ public class ProjectService
 {
     private final ProjectRepository repo;
 
-    public ProjectService(ProjectRepository projectRepository)
+    public ProjectService(ProjectRepository repo)
     {
-        repo = projectRepository;
+        this.repo = repo;
     }
 
     public List<Project> getAllProjects()
@@ -26,24 +26,17 @@ public class ProjectService
     public void createProject(Project project)
     {
         repo.save(project);
-
     }
 
     public Project getProject(long id)
     {
-        Project project  =  repo.findById(id);.
-        
-        if ( project == null)
-            {
-                throw new ProjectNotFoundException("Project not found with id : "+ id);
-            }
+        return repo.findById(id).orElseThrow(() ->  new ProjectNotFoundException("Project not Found!"));
 
-        return project;
     }
 
     public void deleteProject(long id)
     {
-        repo.delete(id);
+        repo.deleteById(id);
     }
     
 }
