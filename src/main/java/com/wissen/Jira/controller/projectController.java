@@ -2,6 +2,8 @@ package com.wissen.Jira.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,9 +28,12 @@ public class projectController
 
 
     @PostMapping
-    public void createProject(@RequestBody Project project) {
-        service.createProject(project);
-    }
+    public ResponseEntity<Project> createProject(@RequestBody Project project) {
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(service.createProject(project));
+}
     
 
     @GetMapping("")

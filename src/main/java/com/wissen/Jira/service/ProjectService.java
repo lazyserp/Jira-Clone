@@ -23,9 +23,9 @@ public class ProjectService
         return repo.findAll();
     }
 
-    public void createProject(Project project)
+    public Project createProject(Project project)
     {
-        repo.save(project);
+        return repo.save(project);
     }
 
     public Project getProject(long id)
@@ -38,5 +38,5 @@ public class ProjectService
     {
         repo.deleteById(id);
     }
-    
+
 }
