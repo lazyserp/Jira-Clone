@@ -7,6 +7,11 @@ import org.springframework.stereotype.Service;
 import com.wissen.Jira.models.Project;
 import com.wissen.Jira.repository.ProjectRepository;
 import com.wissen.Jira.exceptions.ProjectNotFoundException;
+import com.wissen.Jira.dtos.ProjectRequest;
+import com.wissen.Jira.dtos.ProjectResponse;
+import com.wissen.Jira.dtos.TaskResponse;
+
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ProjectService 
@@ -18,25 +23,45 @@ public class ProjectService
         this.repo = repo;
     }
 
-    public List<Project> getAllProjects()
+    @Transactional(readOnly = true)
+    public List<ProjectResponse> getAllProjects()
     {
-        return repo.findAll();
+        return repo.findAll().stream()
+                .map(this::mapToProjectResponse)
+                .toList();
     }
 
-    public Project createProject(Project project)
+    @Transactional
+    public ProjectResponse createProject(ProjectRequest request)
     {
-        return repo.save(project);
+        Project project = new Project();
+        project.setName(request.getName());
+        project.setDescription(request.getDescription());
+        Project saved = repo.save(project);
+        return mapToProjectResponse(saved);
     }
 
-    public Project getProject(long id)
+    @Transactional(readOnly = true)
+    public ProjectResponse getProject(long id)
     {
-        return repo.findById(id).orElseThrow(() ->  new ProjectNotFoundException("Project not Found!"));
-
+        Project project = repo.findById(id)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not Found!"));
+        return mapToProjectResponse(project);
     }
 
+    @Transactional
     public void deleteProject(long id)
     {
+        if (!repo.existsById(id)) {
+            throw new ProjectNotFoundException("Project not Found!");
+        }
         repo.deleteById(id);
     }
 
+    private ProjectResponse mapToProjectResponse(Project project) {
+        List<TaskResponse> taskResponses = project.getTasks().stream()
+                .map(task -> new TaskResponse(task.getId(), task.getTitle(), task.getStatus(), project.getId()))
+                .toList();
+        return new ProjectResponse(project.getId(), project.getName(), project.getDescription(), taskResponses);
+    }
 }

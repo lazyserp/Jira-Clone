@@ -8,23 +8,23 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.CascadeType;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.EqualsAndHashCode;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "projects")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Project {
@@ -33,19 +33,39 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotEmpty(message = "Project Name is required !")
-    @Size(min = 3 , max=100 , message = "Project name must be in 3 to 100 chars !")
+    @NotBlank(message = "Project Name is required!")
+    @Size(min = 3, max = 100, message = "Project name must be in 3 to 100 chars!")
     private String name;
 
-    @Size(min=3 , max=500 , message = "Description not more than 500 chars !")
+    @Size(max = 500, message = "Description not more than 500 chars!")
     private String description;
 
-    @OneToMany(mappedBy = "project" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private List<Task> tasks = new ArrayList<>();
 
+    public void addTask(Task task) {
+        tasks.add(task);
+        task.setProject(this);
+    }
 
+    public void removeTask(Task task) {
+        tasks.remove(task);
+        task.setProject(null);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Project project = (Project) o;
+        return id != null && id.equals(project.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
 

@@ -7,12 +7,15 @@ import com.wissen.Jira.repository.TaskRepository;
 import com.wissen.Jira.exceptions.ProjectNotFoundException;
 import com.wissen.Jira.models.Project;
 import com.wissen.Jira.models.Task;
+import com.wissen.Jira.dtos.TaskRequest;
+import com.wissen.Jira.dtos.TaskResponse;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TaskService 
 {
-    private TaskRepository taskRepo;
-    private ProjectRepository projectRepo ;
+    private final TaskRepository taskRepo;
+    private final ProjectRepository projectRepo;
 
     public TaskService(TaskRepository taskRepo , ProjectRepository projectRepo)
     {
@@ -20,16 +23,24 @@ public class TaskService
         this.projectRepo = projectRepo;
     }
 
-    public Task createTask(Long projectId , Task task)
+    @Transactional
+    public TaskResponse createTask(Long projectId , TaskRequest request)
     {
-        Project project = projectRepo.findById(projectId).orElseThrow( () -> new ProjectNotFoundException("Project not Found!"));
+        Project project = projectRepo.findById(projectId)
+                .orElseThrow(() -> new ProjectNotFoundException("Project not Found!"));
 
-        task.setProject(project);
-        return taskRepo.save(task);
+        Task task = new Task();
+        task.setTitle(request.getTitle());
+        task.setStatus(request.getStatus());
+
+        // Sync bidirectional relationship using parent helper
+        project.addTask(task);
+
+        Task saved = taskRepo.save(task);
+        return mapToTaskResponse(saved);
     }
     
-
-
-
-    
+    private TaskResponse mapToTaskResponse(Task task) {
+        return new TaskResponse(task.getId(), task.getTitle(), task.getStatus(), task.getProject().getId());
+    }
 }

@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.wissen.Jira.models.Project;
+import com.wissen.Jira.dtos.ProjectRequest;
+import com.wissen.Jira.dtos.ProjectResponse;
 import com.wissen.Jira.service.ProjectService;
 
 import jakarta.validation.Valid;
 
-@RestControllerAdvice
+@RestController
 @RequestMapping("/projects")
 public class ProjectController 
 {
@@ -29,35 +29,30 @@ public class ProjectController
         this.service = service;
     }
 
-
     @PostMapping
-    public ResponseEntity<Project> createProject(@Valid @RequestBody Project project) {
-
+    public ResponseEntity<ProjectResponse> createProject(@Valid @RequestBody ProjectRequest project) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(service.createProject(project));
-}
+    }
     
-
     @GetMapping("")
-    public List<Project> getAllProjects()
+    public List<ProjectResponse> getAllProjects()
     {
         return service.getAllProjects();
     }
     
-
     @GetMapping("/{id}")
-    public Project getProject(@PathVariable Long id)
+    public ProjectResponse getProject(@PathVariable Long id)
     {
         return service.getProject(id);
-
     }
 
     @DeleteMapping("/{id}")
-    public void deleteProject(@PathVariable Long id)
+    public ResponseEntity<Void> deleteProject(@PathVariable Long id)
     {
         service.deleteProject(id);
+        return ResponseEntity.noContent().build();
     }    
-
 }
 

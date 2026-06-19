@@ -1,16 +1,18 @@
 package com.wissen.Jira.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.wissen.Jira.dtos.TaskRequest;
+import com.wissen.Jira.dtos.TaskResponse;
 import com.wissen.Jira.service.TaskService;
 
 import jakarta.validation.Valid;
-
-import com.wissen.Jira.models.*;
 
 @RestController
 @RequestMapping("/tasks")
@@ -23,13 +25,10 @@ public class TaskController
         this.taskService = taskService;
     }
 
-
     @PostMapping("/project/{projectId}")
-    public Task createTask(@PathVariable Long projectId ,@Valid @RequestBody Task task)
+    public ResponseEntity<TaskResponse> createTask(@PathVariable Long projectId, @Valid @RequestBody TaskRequest task)
     {
-        return taskService.createTask(projectId, task);
-
+        TaskResponse response = taskService.createTask(projectId, task);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-
-    
 }
