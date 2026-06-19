@@ -11,24 +11,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.wissen.Jira.models.Project;
 import com.wissen.Jira.service.ProjectService;
 
-@RestController
+import jakarta.validation.Valid;
+
+@RestControllerAdvice
 @RequestMapping("/projects")
-public class projectController 
+public class ProjectController 
 {
     private final ProjectService service;
 
-    public projectController(ProjectService service)
+    public ProjectController(ProjectService service)
     {
         this.service = service;
     }
 
 
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
+    public ResponseEntity<Project> createProject(@Valid @RequestBody Project project) {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
