@@ -1,7 +1,10 @@
 package com.wissen.Jira.controller;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,19 +40,19 @@ public class ProjectController
     }
     
     @GetMapping("")
-    public List<ProjectResponse> getAllProjects()
+    public Page<ProjectResponse> getAllProjects(Pageable pageable)
     {
-        return service.getAllProjects();
+        return service.getAllProjects(pageable);
     }
     
     @GetMapping("/{id}")
-    public ProjectResponse getProject(@PathVariable Long id)
+    public ProjectResponse getProject(@PathVariable UUID id)
     {
         return service.getProject(id);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable Long id)
+    public ResponseEntity<Void> deleteProject(@PathVariable UUID id)
     {
         service.deleteProject(id);
         return ResponseEntity.noContent().build();
