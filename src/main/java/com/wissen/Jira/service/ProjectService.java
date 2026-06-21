@@ -1,7 +1,10 @@
 package com.wissen.Jira.service;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.wissen.Jira.models.Project;
@@ -24,11 +27,11 @@ public class ProjectService
     }
 
     @Transactional(readOnly = true)
-    public List<ProjectResponse> getAllProjects()
+    public Page<ProjectResponse> getAllProjects(Pageable pageable)
     {
-        return repo.findAll().stream()
-                .map(this::mapToProjectResponse)
-                .toList();
+        Page<Project> res =  repo.findAll(pageable);
+        Page<ProjectResponse> pagedResponse = res.map(project -> mapToProjectResponse(project));
+        return pagedResponse;
     }
 
     @Transactional
@@ -42,7 +45,7 @@ public class ProjectService
     }
 
     @Transactional(readOnly = true)
-    public ProjectResponse getProject(long id)
+    public ProjectResponse getProject(UUID id)
     {
         Project project = repo.findById(id)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not Found!"));
@@ -50,7 +53,7 @@ public class ProjectService
     }
 
     @Transactional
-    public void deleteProject(long id)
+    public void deleteProject(UUID id)
     {
         if (!repo.existsById(id)) {
             throw new ProjectNotFoundException("Project not Found!");

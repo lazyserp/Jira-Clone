@@ -16,6 +16,9 @@ import lombok.AllArgsConstructor;
 import lombok.ToString;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+
+import java.util.UUID;
+
 @Entity
 @Table(name = "tasks")
 @Getter
@@ -25,8 +28,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 public class Task 
 {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @NotBlank(message = "Task title cannot be empty!")
     @Size(min = 3, max = 100, message = "Title must be in 3 to 100 chars")

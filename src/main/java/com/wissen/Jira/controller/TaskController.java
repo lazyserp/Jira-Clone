@@ -13,6 +13,7 @@ import com.wissen.Jira.dtos.TaskResponse;
 import com.wissen.Jira.service.TaskService;
 
 import jakarta.validation.Valid;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/tasks")
@@ -25,8 +26,8 @@ public class TaskController
         this.taskService = taskService;
     }
 
-    @PostMapping("/project/{projectId}")
-    public ResponseEntity<TaskResponse> createTask(@PathVariable Long projectId, @Valid @RequestBody TaskRequest task)
+    @PostMapping("/projects/{projectId}")
+    public ResponseEntity<TaskResponse> createTask(@PathVariable UUID projectId, @Valid @RequestBody TaskRequest task)
     {
         TaskResponse response = taskService.createTask(projectId, task);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);

@@ -10,6 +10,7 @@ import com.wissen.Jira.models.Task;
 import com.wissen.Jira.dtos.TaskRequest;
 import com.wissen.Jira.dtos.TaskResponse;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.UUID;
 
 @Service
 public class TaskService 
@@ -24,7 +25,7 @@ public class TaskService
     }
 
     @Transactional
-    public TaskResponse createTask(Long projectId , TaskRequest request)
+    public TaskResponse createTask(UUID projectId , TaskRequest request)
     {
         Project project = projectRepo.findById(projectId)
                 .orElseThrow(() -> new ProjectNotFoundException("Project not Found!"));

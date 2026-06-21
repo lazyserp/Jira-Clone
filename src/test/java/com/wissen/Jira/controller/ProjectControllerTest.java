@@ -40,12 +40,12 @@ public class ProjectControllerTest {
                 .andReturn().getResponse().getContentAsString();
 
         // Extract project ID
-        Number projectId = objectMapper.readTree(projectResponseString).get("id").numberValue();
+        String projectId = objectMapper.readTree(projectResponseString).get("id").asText();
 
         // 2. Create a task for that project
         TaskRequest taskRequest = new TaskRequest("Implement REST DTOs", "In Progress");
 
-        mockMvc.perform(post("/tasks/project/" + projectId)
+        mockMvc.perform(post("/tasks/projects/" + projectId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(taskRequest)))
                 .andExpect(status().isCreated())
