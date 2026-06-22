@@ -5,12 +5,16 @@ import org.springframework.stereotype.Service;
 import com.wissen.Jira.repository.ProjectRepository;
 import com.wissen.Jira.repository.TaskRepository;
 import com.wissen.Jira.exceptions.ProjectNotFoundException;
+import com.wissen.Jira.interfaces.TaskSummary;
 import com.wissen.Jira.models.Project;
 import com.wissen.Jira.models.Task;
 import com.wissen.Jira.dtos.TaskRequest;
 import com.wissen.Jira.dtos.TaskResponse;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskService 
@@ -43,5 +47,11 @@ public class TaskService
     
     private TaskResponse mapToTaskResponse(Task task) {
         return new TaskResponse(task.getId(), task.getTitle(), task.getStatus(), task.getProject().getId());
+    }
+
+    public List<TaskSummary> findByStatus(String status)
+    {
+        List<TaskSummary> resp = taskRepo.findByStatus(status);
+        return resp;
     }
 }

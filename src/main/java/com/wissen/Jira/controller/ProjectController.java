@@ -42,6 +42,7 @@ public class ProjectController
     @GetMapping("")
     public Page<ProjectResponse> getAllProjects(Pageable pageable)
     {
+        //call the api via : http://localhost:8080/projects?page=1&size=10&sort=name
         return service.getAllProjects(pageable);
     }
     
