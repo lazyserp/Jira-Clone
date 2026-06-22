@@ -13,15 +13,18 @@ import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-
+/**
+ * Project entity — the aggregate root that owns a collection of Tasks.
+ *
+ * NOTE: No validation annotations here. All input validation lives
+ *       in ProjectRequest DTO so the entity stays a pure persistence object.
+ *       No Jackson annotations needed because responses go through ProjectResponse DTO.
+ */
 @Entity
 @Table(name = "projects")
 @Getter
@@ -34,23 +37,23 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank(message = "Project Name is required!")
-    @Size(min = 3, max = 100, message = "Project name must be in 3 to 100 chars!")
     private String name;
 
-    @Size(max = 500, message = "Description not more than 500 chars!")
     private String description;
 
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
     @ToString.Exclude
     private List<Task> tasks = new ArrayList<>();
 
+    // ── Bidirectional relationship helpers ───────────────────────────────────
+
+    /** Adds a task and keeps both sides of the relationship in sync. */
     public void addTask(Task task) {
         tasks.add(task);
         task.setProject(this);
     }
 
+    /** Removes a task and keeps both sides of the relationship in sync. */
     public void removeTask(Task task) {
         tasks.remove(task);
         task.setProject(null);
@@ -69,4 +72,3 @@ public class Project {
         return getClass().hashCode();
     }
 }
-

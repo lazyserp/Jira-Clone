@@ -7,40 +7,43 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.ToString;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 
 import java.util.UUID;
 
+/**
+ * Task entity — represents a single work item belonging to a Project.
+ *
+ * NOTE: No validation annotations here. All input validation lives
+ *       in TaskRequest DTO so the entity stays a pure persistence object.
+ *       No Jackson annotations needed because responses go through TaskResponse DTO.
+ */
 @Entity
 @Table(name = "tasks")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Task 
-{
+public class Task {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @NotBlank(message = "Task title cannot be empty!")
-    @Size(min = 3, max = 100, message = "Title must be in 3 to 100 chars")
     private String title;
 
-    @NotBlank(message = "Status cannot be empty!")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private TaskStatus status;
 
     @ManyToOne
     @JoinColumn(name = "project_id")
-    @JsonBackReference
     @ToString.Exclude
     private Project project;
 
